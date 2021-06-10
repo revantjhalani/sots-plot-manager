@@ -1,43 +1,20 @@
-import os
-import subprocess
-from datetime import datetime
+import os 
+import subprocess 
+import redis
+from datetime import datetime 
+
+r = redis.Redis(
+    host='localhost',
+    port=6379, 
+    password='password',
+    decode_responses=True)
 
 log_path = '/home/sotpurk/sotlogs/'
 
 def findinfo(start, end, line):
-    print(start, line)
-    x = line[line.find(start) + len(start):line.find(end)].split('\n')[0]
+    print(start, line, end)
+    x = line[line.find(start) + len(start):line.rfind(end)].split('\n')[0]
     return x
-def readlog(filename):
-    f = open(filename)
-    plotdeets = {}
-    config_dict = {}
-    for line in f:
-        if line.find('Phase') != -1:
-            plotdeets[findinfo('Phase ', ' took ', line)]=findinfo(' took ', ' sec', line)
-        pids = 'Process ID: '
-        if line.find(pids) != -1:
-            plotdeets['pid'] = findinfo(pids, '\n', line)
-        temp = 'Working Directory:   '
-        if line.find(temp) != -1:
-            plotdeets['temp'] = findinfo(temp, '\n', line)
-        threads = 'Number of Threads: '
-        if line.find(threads) != -1:
-            plotdeets['threads'] = findinfo(threads, '\n', line)
-        dest = 'Final Directory: '
-        if line.find(dest) != -1:
-            plotdeets['dest'] = findinfo(dest, '\n', line)
-        plot = 'Plot Name: '
-        if line.find(plot) != -1:
-            plotdeets['plot'] = findinfo(plot, '\n', line)
-        copy= 'finished, took '
-        if line.find(copy) != -1:
-            plotdeets['copy'] = findinfo(copy, ' sec', line)
-        total = 'Total plot creation time was '
-        if line.find(total) != -1:
-            plotdeets['total'] = findinfo(total, ' sec', line)
-    return plotdeets
-
 
 def create(temporary_directory, destination_directory, threads, #buckets,
            chia_location='chia', temporary2_directory=None, farmer_public_key=None, pool_public_key=None):
@@ -66,13 +43,10 @@ def create(temporary_directory, destination_directory, threads, #buckets,
         shell=False,
     )
     return process
-
-
-
 def log_name(log_path, temp, plot):
     tp=temp+'_'+plot
     return os.path.join(log_path, f'{tp}_{str(datetime.now()).replace(" ", "_").replace(":", "_").replace(".", "_")}.log')
-
+'''
 process=create( 
         chia_location="/home/sotpurk/madmaxplotter/chia-plotter/build/chia_plot",
         farmer_public_key="b356b66c75c8d0373a788ebe67436d6d9a3554845d80cc11142d3bdcd61971027509aaa14aac90122623d93ae43c3c25",
@@ -82,3 +56,4 @@ process=create(
         threads=4,
         #buckets=job.buckets,
 )
+'''
