@@ -45,9 +45,10 @@ def readlog(filename):
     return plotdeets
 
 
-while True:  
+def setlogs():
     for file in glob.glob("logs/*.log"):
         r.hset('plots', file, str(readlog(file)))
 #    for i in r.hgetall('plots'):
 #        print(eval(r.hgetall('plots')[i])['5'])
-    sleep(5)
+def getlogs():
+    return r.hgetall('plots')
